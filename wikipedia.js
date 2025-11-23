@@ -72,8 +72,13 @@ async function getWikipediaData(language, topic) {
         else return axios.request(requestConfig);
     };
 
-    const [wikipediaSummaryResponse, wikipediaHTMLResponse]
-        = await axios.all([wikipediaSummaryPromise(), wikipediaHTMLPromise()]);
+    const [wikipediaSummaryResponse, wikipediaHTMLResponse] =
+    await Promise.allSettled([wikipediaSummaryPromise(), wikipediaHTMLPromise()]);
+ 
+    const summaryOk = wikipediaSummaryResponse.status === 'fulfilled';
+    const htmlOk = wikipediaHTMLResponse.status === 'fulfilled';
+    const wikipediaSummaryJSON = summaryOk ? wikipediaSummaryResponse.value.data : null;
+    const wikipediaHTMLJSON = htmlOk ? wikipediaHTMLResponse.value.data : null;
 
     if (wikipediaHTMLResponse.data == undefined ) {
         // No wikipedia article
